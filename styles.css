@@ -1,36 +1,115 @@
-body {
-    font-family: Arial, sans-serif;
+/* General Reset */
+* {
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #4bc3d3, #361f32); /* Eye-catching gradient background */
     color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
     text-align: center;
 }
-.container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    background: #ffffff1a;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
+
+/* Main Heading */
 h1 {
-    margin-bottom: 20px;
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 0px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
+
+/* Section Headers */
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0px;
+    margin-top: 50px;
+    color: #fff;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Input Fields Styling */
 input[type="file"] {
-    margin: 10px 0;
+    padding: 12px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+    color: #333;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+input[type="file"]:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Styling */
+button {
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    background-color: #ff6347; /* Bright button color */
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px 0;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background-color: #ff4500;
+    transform: scale(1.05);
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Link Styling */
+a {
+    font-size: 1.2rem;
+    color: #c6ed67;
+    text-decoration: none;
+    margin-top: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
     color: #fff;
 }
-button {
-    background-color: #4caf50;
-    border: none;
-    padding: 10px 20px;
-    color: white;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
+
+/* Download Links Visibility */
+#downloadLinkMerge, #downloadLinkConvert {
+    display: none;
 }
-button:hover {
-    background-color: #45a049;
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    input[type="file"], button {
+        width: 80%;
+    }
 }
+
