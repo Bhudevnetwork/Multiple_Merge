@@ -1,24 +1,31 @@
-
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Merger</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>PDF Merger & Converter</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Merge Your PDFs</h1>
-        <p>Select multiple PDF files to merge them into one.</p>
-        <input type="file" id="fileInput" accept="application/pdf" multiple />
-        <br />
-        <button id="mergeBtn">Merge PDFs</button>
-        <br />
-        <a id="downloadLink" style="display: none; color: #fff; text-decoration: underline; margin-top: 20px;">Download Merged PDF</a>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+
+
+    <h1>PDF Merger & File Converter</h1>
+
+    <!-- File Conversion Section -->
+    <h2>Convert to PDF</h2>
+    <input type="file" id="fileInputConvert">
+    <button id="convertBtn">Convert to PDF</button>
+    <a id="downloadLinkConvert" style="display: none;">Download Converted PDF</a>
+
+    <!-- PDF Merging Section -->
+    <h2>Merge PDFs</h2>
+    <input type="file" id="fileInputMerge" multiple>
+    <button id="mergeBtn">Merge PDFs</button>
+    <a id="downloadLinkMerge" style="display: none;">Download Merged PDF</a>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
