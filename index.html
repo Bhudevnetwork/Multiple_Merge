@@ -3,29 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Merger & Converter</title>
+    <title>File Converter and PDF Merger</title>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.js"></script>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-
-    <h1>PDF Merger & File Converter</h1>
-
-    <!-- File Conversion Section -->
-    <h2>Convert to PDF</h2>
-    <input type="file" id="fileInputConvert">
-    <button id="convertBtn">Convert to PDF</button>
-    <a id="downloadLinkConvert" style="display: none;">Download Converted PDF</a>
-
-    <!-- PDF Merging Section -->
-    <h2>Merge PDFs</h2>
-    <input type="file" id="fileInputMerge" multiple>
+    <h1>File Converter and PDF Merger</h1>
+    
+    <!-- Convert Multiple Files to PDF -->
+    <h2>Convert Files to PDF</h2>
+    <input type="file" id="fileInputConvert" multiple>
+    <button id="convertBtn">Convert Files to PDF</button>
+    <br><br>
+    <div id="convertDownloadContainer" style="display:none;">
+        <a id="convertDownloadLink" href="#" download="converted-files.pdf">
+            <button>Download Converted PDF</button>
+        </a>
+    </div>
+    
+    <!-- Merge PDF Files -->
+    <h2>Merge PDF Files</h2>
+    <input type="file" id="fileInputMerge" multiple accept="application/pdf">
     <button id="mergeBtn">Merge PDFs</button>
-    <a id="downloadLinkMerge" style="display: none;">Download Merged PDF</a>
+    <br><br>
+    <div id="mergeDownloadContainer" style="display:none;">
+        <a id="mergeDownloadLink" href="#" download="merged-pdfs.pdf">
+            <button>Download Merged PDF</button>
+        </a>
+    </div>
 
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
