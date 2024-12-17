@@ -1,142 +1,85 @@
-const fileInputMerge = document.getElementById('fileInputMerge');
-const mergeBtn = document.getElementById('mergeBtn');
-const downloadLinkMerge = document.getElementById('downloadLinkMerge');
-const fileInputConvert = document.getElementById('fileInputConvert');
 const convertBtn = document.getElementById('convertBtn');
-const downloadLinkConvert = document.getElementById('downloadLinkConvert');
+const fileInputConvert = document.getElementById('fileInputConvert');
+const mergeBtn = document.getElementById('mergeBtn');
+const fileInputMerge = document.getElementById('fileInputMerge');
+const convertDownloadContainer = document.getElementById('convertDownloadContainer');
+const mergeDownloadContainer = document.getElementById('mergeDownloadContainer');
+const convertDownloadLink = document.getElementById('convertDownloadLink');
+const mergeDownloadLink = document.getElementById('mergeDownloadLink');
 
-// Merge PDFs
-mergeBtn.addEventListener('click', async () => {
-    const files = fileInputMerge.files;
-    if (files.length < 2) {
-        alert('Please select at least two PDFs to merge.');
-        return;
-    }
-
-    const pdfLib = PDFLib;
-    const mergedPdf = await pdfLib.PDFDocument.create();
-    console.log('Merging PDFs:', files);
-
-    for (const file of files) {
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            console.log(`Processing file: ${file.name}`);
-            const pdf = await pdfLib.PDFDocument.load(arrayBuffer);
-            const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-            pages.forEach(page => mergedPdf.addPage(page));
-        } catch (error) {
-            console.error(`Error processing file: ${file.name}`, error);
-            alert(`Error processing file: ${file.name}.`);
-        }
-    }
-
-    const mergedPdfBytes = await mergedPdf.save();
-    console.log('Merged PDF successfully created.');
-
-    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+// Utility function to trigger file download
+function downloadFile(fileName, fileBytes, downloadContainer, downloadLink) {
+    const blob = new Blob([fileBytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
 
-    downloadLinkMerge.href = url;
-    downloadLinkMerge.download = 'merged.pdf';
-    downloadLinkMerge.style.display = 'block';
-    downloadLinkMerge.textContent = 'Download Merged PDF';
-});
+    // Set the URL to the download link
+    downloadLink.href = url;
+    downloadLink.download = fileName;
 
-// Convert File to PDF (Image, DOCX, TXT)
+    // Show the download container
+    downloadContainer.style.display = 'block';
+}
+
+// Convert Multiple Files to a Single PDF
 convertBtn.addEventListener('click', async () => {
-    const file = fileInputConvert.files[0];
-    if (!file) {
-        alert('Please select a file to convert.');
+    const files = fileInputConvert.files;
+    if (!files.length) {
+        alert('Please select files to convert.');
         return;
     }
 
-    const pdfLib = PDFLib;
-    const pdfDoc = await pdfLib.PDFDocument.create();
-    console.log('Starting conversion for:', file);
+    const pdfDoc = await PDFLib.PDFDocument.create();
 
-    try {
+    for (const file of files) {
         const fileType = file.type;
+        const arrayBuffer = await file.arrayBuffer();
 
-        // Image file processing (JPEG, PNG, JPG, WEBP)
         if (fileType.includes('image')) {
-            console.log('File is an image type:', fileType);
-            const arrayBuffer = await file.arrayBuffer();
+            // Process Image Files
             let image;
-
             if (fileType.includes('jpeg') || fileType.includes('jpg')) {
-                image = await pdfDoc.embedJpg(arrayBuffer); // Embed JPEG
-                console.log('JPEG image embedded');
+                image = await pdfDoc.embedJpg(arrayBuffer);
             } else if (fileType.includes('png')) {
-                image = await pdfDoc.embedPng(arrayBuffer); // Embed PNG
-                console.log('PNG image embedded');
-            } else if (fileType.includes('webp')) {
-                image = await pdfDoc.embedPng(arrayBuffer); // Treat WEBP as PNG for embedding
-                console.log('WEBP image treated as PNG and embedded');
+                image = await pdfDoc.embedPng(arrayBuffer);
+            } else {
+                alert(`Unsupported image type: ${fileType}`);
+                continue;
             }
-
-            const page = pdfDoc.addPage();
-            const { width, height } = page.getSize();
-            page.drawImage(image, {
-                x: 0,
-                y: height - image.height,
-                width: image.width,
-                height: image.height,
-            });
-
-        // Text file processing (TXT)
+            const page = pdfDoc.addPage([image.width, image.height]);
+            page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
         } else if (fileType.includes('text')) {
-            console.log('File is a text type:', fileType);
+            // Process Text Files
             const textContent = await file.text();
             const page = pdfDoc.addPage();
             const { width, height } = page.getSize();
             const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-            const fontSize = 12;
-            page.drawText(textContent, {
-                x: 50,
-                y: height - 50,
-                font,
-                size: fontSize,
-                maxWidth: width - 100,
-            });
-
-        // DOCX file processing
-        } else if (file.name.endsWith('.docx')) {
-            console.log('File is a DOCX type');
-            const arrayBuffer = await file.arrayBuffer();
-            const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-            const textContent = result.value;
-            const page = pdfDoc.addPage();
-            const { width, height } = page.getSize();
-            const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-            const fontSize = 12;
-            page.drawText(textContent, {
-                x: 50,
-                y: height - 50,
-                font,
-                size: fontSize,
-                maxWidth: width - 100,
-            });
-
+            page.drawText(textContent, { x: 50, y: height - 50, size: 12, maxWidth: width - 100 });
         } else {
-            alert('Unsupported file type.');
-            console.log('Unsupported file type:', fileType);
-            return;
+            alert(`Unsupported file type: ${fileType}`);
         }
-
-        // Save the PDF
-        const pdfBytes = await pdfDoc.save();
-        console.log('PDF created successfully');
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-
-        // Display the download link
-        downloadLinkConvert.href = url;
-        downloadLinkConvert.download = 'converted.pdf';
-        downloadLinkConvert.style.display = 'block';
-        downloadLinkConvert.textContent = 'Download Converted PDF';
-
-    } catch (error) {
-        console.error('Error converting file to PDF:', error);
-        alert('Error converting the file. Please try again.');
     }
+
+    const pdfBytes = await pdfDoc.save();
+    downloadFile('converted-files.pdf', pdfBytes, convertDownloadContainer, convertDownloadLink);
+});
+
+// Merge Multiple PDF Files
+mergeBtn.addEventListener('click', async () => {
+    const files = fileInputMerge.files;
+    if (files.length < 2) {
+        alert('Please select at least two PDF files to merge.');
+        return;
+    }
+
+    const mergedPdf = await PDFLib.PDFDocument.create();
+
+    for (const file of files) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach(page => mergedPdf.addPage(page));
+    }
+
+    const mergedPdfBytes = await mergedPdf.save();
+    downloadFile('merged-pdfs.pdf', mergedPdfBytes, mergeDownloadContainer, mergeDownloadLink);
 });
