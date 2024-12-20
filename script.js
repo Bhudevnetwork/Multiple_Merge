@@ -1,10 +1,8 @@
-const convertBtn = document.getElementById('convertBtn');
-const fileInputConvert = document.getElementById('fileInputConvert');
-const mergeBtn = document.getElementById('mergeBtn');
+// References to HTML elements
 const fileInputMerge = document.getElementById('fileInputMerge');
-const convertDownloadContainer = document.getElementById('convertDownloadContainer');
+const fileListContainer = document.getElementById('fileList');
+const mergeBtn = document.getElementById('mergeBtn');
 const mergeDownloadContainer = document.getElementById('mergeDownloadContainer');
-const convertDownloadLink = document.getElementById('convertDownloadLink');
 const mergeDownloadLink = document.getElementById('mergeDownloadLink');
 
 // Utility function to trigger file download
@@ -63,17 +61,64 @@ convertBtn.addEventListener('click', async () => {
     downloadFile('converted-files.pdf', pdfBytes, convertDownloadContainer, convertDownloadLink);
 });
 
-// Merge Multiple PDF Files
-mergeBtn.addEventListener('click', async () => {
-    const files = fileInputMerge.files;
+
+// Populate the file list and enable drag-and-drop sorting
+fileInputMerge.addEventListener('change', () => {
+    const files = Array.from(fileInputMerge.files);
+
     if (files.length < 2) {
         alert('Please select at least two PDF files to merge.');
+        mergeBtn.disabled = true;
         return;
     }
 
+    fileListContainer.classList.remove('empty');
+    fileListContainer.innerHTML = ''; // Clear previous list
+
+    files.forEach((file) => {
+        const fileItem = document.createElement('li');
+        fileItem.className = 'file-item';
+        fileItem.textContent = file.name;
+        fileItem.setAttribute('draggable', true);
+        fileItem.dataset.fileName = file.name;
+
+        // Drag-and-drop event listeners for reordering
+        fileItem.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', fileItem.dataset.fileName);
+            fileItem.classList.add('dragging');
+        });
+
+        fileItem.addEventListener('dragend', () => {
+            fileItem.classList.remove('dragging');
+        });
+
+        fileItem.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        fileItem.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const draggedFileName = e.dataTransfer.getData('text/plain');
+            const draggedItem = document.querySelector(`[data-file-name="${draggedFileName}"]`);
+            fileListContainer.insertBefore(draggedItem, fileItem.nextSibling);
+        });
+
+        fileListContainer.appendChild(fileItem);
+    });
+
+    // Enable the Merge Button
+    mergeBtn.disabled = false;
+});
+
+// Merge the PDFs in the reordered sequence
+mergeBtn.addEventListener('click', async () => {
+    const files = Array.from(fileInputMerge.files);
+    const fileOrder = Array.from(document.querySelectorAll('.file-item')).map(item => item.dataset.fileName);
+    const orderedFiles = fileOrder.map(fileName => files.find(file => file.name === fileName));
+
     const mergedPdf = await PDFLib.PDFDocument.create();
 
-    for (const file of files) {
+    for (const file of orderedFiles) {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
@@ -82,4 +127,25 @@ mergeBtn.addEventListener('click', async () => {
 
     const mergedPdfBytes = await mergedPdf.save();
     downloadFile('merged-pdfs.pdf', mergedPdfBytes, mergeDownloadContainer, mergeDownloadLink);
+});
+
+// Helper function to download the merged PDF
+function downloadFile(filename, data, container, link) {
+    const blob = new Blob([data], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'inline-block'; // Show the download link
+    link.textContent = 'Download Merged PDF';
+
+    container.style.display = 'block';
+}
+
+// Ensure the DOM is fully loaded before adding the event listener
+document.addEventListener("DOMContentLoaded", function() {
+    // Add click event to the refresh button
+    document.getElementById("refreshBtn").addEventListener("click", function() {
+        location.reload(); // Reload the page
+    });
 });
