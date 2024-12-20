@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>File Converter and PDF Merger</h1>
+    <h1> File Converter and PDF Merger</h1><button id="refreshBtn">Reload</button>
     
     <!-- Convert Multiple Files to PDF -->
     <h2>Convert Files to PDF</h2>
@@ -17,22 +17,34 @@
     <button id="convertBtn">Convert Files to PDF</button>
     <br><br>
     <div id="convertDownloadContainer" style="display:none;">
-        <a id="convertDownloadLink" href="#" download="converted-files.pdf">
+        <a id="convertDownloadLink" href="#" download="converted-file.pdf">
             <button>Download Converted PDF</button>
         </a>
     </div>
     
     <!-- Merge PDF Files -->
-    <h2>Merge PDF Files</h2>
-    <input type="file" id="fileInputMerge" multiple accept="application/pdf">
-    <button id="mergeBtn">Merge PDFs</button>
-    <br><br>
-    <div id="mergeDownloadContainer" style="display:none;">
-        <a id="mergeDownloadLink" href="#" download="merged-pdfs.pdf">
-            <button>Download Merged PDF</button>
-        </a>
+    <div>
+        <h2>Merge PDF</h2>
+        <input type="file" id="fileInputMerge" multiple accept=".pdf" />
+        <ul id="fileList" class="file-list">
+            <!-- PDF file names will be dynamically added here as vertical boxes -->
+        </ul>
+        <button id="mergeBtn" disabled>Merge PDFs</button>
+        <div id="mergeDownloadContainer">
+            <a id="mergeDownloadLink" style="display: none;">Download Merged PDF</a>
+        </div>
     </div>
-
+    <div id="mergeDownloadContainer">
+        <a id="mergeDownloadLink" href="#" download>Download Merged PDF</a>
+    </div>
+    
+    
     <script src="script.js"></script>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+
+
+
+
 </body>
 </html>
